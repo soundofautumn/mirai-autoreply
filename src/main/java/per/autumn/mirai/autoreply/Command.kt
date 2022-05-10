@@ -53,7 +53,7 @@ class Command {
         }
     }
 
-    object QueryEnabledGroups : SimpleCommand(AutoReply, "查询所有开启了自动回复的群") {
+    object QueryEnabledGroups : SimpleCommand(AutoReply, "查询所有群") {
         @Handler
         suspend fun handle(sender: CommandSender) {
             val chainBuilder = MessageChainBuilder()

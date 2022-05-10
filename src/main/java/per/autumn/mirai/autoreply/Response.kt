@@ -1,7 +1,6 @@
 package per.autumn.mirai.autoreply
 
 import cn.hutool.core.date.DateUtil
-import cn.hutool.core.math.Calculator
 import net.mamoe.mirai.message.data.MessageChain
 import net.objecthunter.exp4j.ExpressionBuilder
 
@@ -14,11 +13,14 @@ data class Response(val pattern: String) {
         const val EmptyString = ""
         const val Quote = "@q"
         const val AtAll = "@a"
+        const val AtSender = "@s"
         const val Now = "\${now}"
         const val Today = "\${today}"
+        const val DayOfWeek = "\${day}"
         const val Calc = "\${calc}"
     }
 
+    val atSender = pattern.contains(AtSender)
     val quote = pattern.contains(Quote)
     val atAll = pattern.contains(AtAll)
 
@@ -37,6 +39,9 @@ data class Response(val pattern: String) {
             }
             if (res.contains(Today)) {
                 res = res.replace(Today, DateUtil.today())
+            }
+            if (res.contains(DayOfWeek)) {
+                res = res.replace(DayOfWeek, getCurrentDayOfWeek())
             }
             if (res.contains(Calc)) {
                 res = res.replace(Calc, ExpressionBuilder(keyword.parse(text, Calc)).build().evaluate().toString())

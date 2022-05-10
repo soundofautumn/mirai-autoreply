@@ -1,5 +1,6 @@
 package per.autumn.mirai.autoreply
 
+import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.event.events.MessageEvent
 import net.mamoe.mirai.message.data.*
 import per.autumn.mirai.autoreply.Config.replyMap
@@ -50,11 +51,21 @@ object ReplyManager {
     }
 
     private fun addExtraMessage(event: MessageEvent, response: Response, cb: MessageChainBuilder) {
+        if (event is GroupMessageEvent) {
+            addExtraMessage(event, response, cb)
+        }
+    }
+
+    private fun addExtraMessage(event: GroupMessageEvent, response: Response, cb: MessageChainBuilder) {
         if (response.quote) {
             cb.add(QuoteReply(event.message))
         }
         if (response.atAll) {
             cb.add(AtAll)
         }
+        if (response.atSender) {
+            cb.add(At(event.sender))
+        }
     }
+
 }
