@@ -1,8 +1,6 @@
 package per.autumn.mirai.autoreply
 
-import cn.hutool.core.date.DateUtil
 import net.mamoe.mirai.message.data.MessageChain
-import net.objecthunter.exp4j.ExpressionBuilder
 
 /**
  * @author SoundOfAutumn
@@ -35,17 +33,16 @@ data class Response(val pattern: String) {
         } else {
             var res = pattern
             if (res.contains(Now)) {
-                res = res.replace(Now, DateUtil.now())
+                res = res.replace(Now, nowTime())
             }
             if (res.contains(Today)) {
-                res = res.replace(Today, DateUtil.today())
+                res = res.replace(Today, today())
             }
             if (res.contains(DayOfWeek)) {
-                res = res.replace(DayOfWeek, getCurrentDayOfWeek())
+                res = res.replace(DayOfWeek, currentDayOfWeek())
             }
             if (res.contains(Calc)) {
-                res = res.replace(Calc, ExpressionBuilder(keyword.parse(text, Calc)).build().evaluate().toString())
-                //res = res.replace(Calc, Calculator.conversion(keyword.parse(text, Calc)).toString())
+                res = res.replace(Calc, calculateExpression(keyword.parse(text, Calc)))
             }
             removeExtra(res)
         }
