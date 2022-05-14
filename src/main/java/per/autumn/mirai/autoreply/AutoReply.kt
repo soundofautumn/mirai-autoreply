@@ -11,7 +11,7 @@ import per.autumn.mirai.autoreply.ReplyManager.getResponse
 import per.autumn.mirai.autoreply.ReplyManager.hasKeyword
 
 object AutoReply : JavaPlugin(
-    JvmPluginDescriptionBuilder("per.autumn.mirai.autoreply.plugin", "1.3")
+    JvmPluginDescriptionBuilder("per.autumn.mirai.autoreply.plugin", "1.3.1")
         .info("一个简易的自动回复插件")
         .name("auto-reply").build()
 ) {
