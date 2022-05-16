@@ -14,7 +14,7 @@ repositories {
     mavenCentral()
 }
 dependencies {
-    implementation("cn.hutool:hutool-core:5.8.0.M1")
+    implementation("cn.hutool:hutool-all:5.8.0.M1")
     implementation ("net.objecthunter:exp4j:0.4.8")
 }
 
