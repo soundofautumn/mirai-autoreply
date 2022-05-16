@@ -6,11 +6,11 @@ package per.autumn.mirai.autoreply
  */
 data class Keyword(private val pattern: String) {
 
+    private val needParse = pattern.contains("$")
+    private val parserRegex = if (needParse) pattern.replace(Regex("""\$\{.*}"""), """\$\{.*}""") else pattern
+
     fun isMatchWith(text: String): Boolean {
-        if (!pattern.contains("$")) {
-            return pattern == text
-        }
-        return text.contains(pattern.replace(Regex("\\$\\{.*}"), ""))
+        return text.contains(Regex(parserRegex))
     }
 
     fun parse(text: String, patternType: String): String {
