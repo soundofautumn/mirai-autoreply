@@ -18,6 +18,7 @@ object AutoReply : JavaPlugin(
     override fun onEnable() {
         Config.reload()
         registerCommands()
+        //添加群组监听
         GlobalEventChannel
             .filterIsInstance<GroupMessageEvent>()
             .filter { enabledGroups.contains(it.group.id) }
@@ -26,6 +27,7 @@ object AutoReply : JavaPlugin(
                     it.group.sendMessage(getResponse(it))
                 }
             }
+        //添加私聊监听
         GlobalEventChannel
             .subscribeAlways<UserMessageEvent> {
                 if (Config.enablePrivateChat && hasKeyword(it.message)) {
@@ -41,8 +43,8 @@ object AutoReply : JavaPlugin(
 
     private fun registerCommands() {
         registerCommands(
-            Command.Add,
-            Command.Remove,
+            Command.AddAutoReply,
+            Command.RemoveAutoReply,
             Command.QueryReply,
             Command.EnableGroup,
             Command.DisableGroup,
