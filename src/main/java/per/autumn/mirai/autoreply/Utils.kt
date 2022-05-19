@@ -1,6 +1,8 @@
 package per.autumn.mirai.autoreply
 
 import cn.hutool.core.date.DateUtil
+import cn.hutool.core.util.ClassUtil
+import net.mamoe.mirai.console.command.Command
 import net.mamoe.mirai.contact.Group
 import net.mamoe.mirai.contact.Member
 import net.objecthunter.exp4j.ExpressionBuilder
@@ -27,16 +29,28 @@ fun calculateExpression(expression: String): String {
     return ExpressionBuilder(expression).build().evaluate().toString()
 }
 
-fun getMemberByName(group: Group, name: String): Member? {
+/**
+ * 必须在MiraiConsole启动后才能被调用
+ */
+fun getAllCommands(): List<Command> {
+    val res = mutableListOf<Command>()
+    val clazz = ClassUtil.scanPackage("per.autumn.mirai.autoreply") { Command::class.java.isAssignableFrom(it) }
+    clazz.forEach {
+        res.add(it.getField("INSTANCE").get(null) as Command)
+    }
+    return res
+}
+
+fun Group.findMemberOrNull(group: Group, name: String): Member? {
     group.members.forEach {
         if (it.nick.lowercase() == name.lowercase()) {
             return it
         }
     }
-    return fuzzyGetMemberByName(group, name)
+    return fuzzyFindMemberOrNull(group, name)
 }
 
-private fun fuzzyGetMemberByName(group: Group, name: String): Member? {
+private fun fuzzyFindMemberOrNull(group: Group, name: String): Member? {
     //双重筛选
     //第一类是匹配率大于0.2
     //第二类是匹配率大于0.8

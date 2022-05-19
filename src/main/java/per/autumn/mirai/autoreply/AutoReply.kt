@@ -1,6 +1,8 @@
 package per.autumn.mirai.autoreply
 
-import net.mamoe.mirai.console.command.CommandManager
+import net.mamoe.mirai.console.command.Command
+import net.mamoe.mirai.console.command.CommandManager.INSTANCE.register
+import net.mamoe.mirai.console.command.CommandManager.INSTANCE.unregister
 import net.mamoe.mirai.console.plugin.jvm.JavaPlugin
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescriptionBuilder
 import net.mamoe.mirai.event.GlobalEventChannel
@@ -9,12 +11,14 @@ import net.mamoe.mirai.event.events.UserMessageEvent
 import per.autumn.mirai.autoreply.Config.enabledGroups
 import per.autumn.mirai.autoreply.ReplyManager.getResponse
 import per.autumn.mirai.autoreply.ReplyManager.hasKeyword
+import java.io.File
 
 object AutoReply : JavaPlugin(
     JvmPluginDescriptionBuilder("per.autumn.mirai.autoreply.plugin", "1.3.1")
         .info("一个简易的自动回复插件")
         .name("auto-reply").build()
 ) {
+    val imgFolder = File(dataFolder, "/img")
     override fun onEnable() {
         Config.reload()
         registerCommands()
@@ -34,29 +38,24 @@ object AutoReply : JavaPlugin(
                     it.subject.sendMessage(getResponse(it))
                 }
             }
-
     }
 
     override fun onDisable() {
+        unregisterCommands()
         Config.save()
     }
 
-    private fun registerCommands() {
-        registerCommands(
-            Command.AddAutoReply,
-            Command.RemoveAutoReply,
-            Command.QueryReply,
-            Command.EnableGroup,
-            Command.DisableGroup,
-            Command.QueryEnabledGroups,
-            Command.EnablePrivateChat,
-            Command.DisablePrivateChat
-        )
+    private val commands = getAllCommands()
+
+    private fun registerCommands(commands: List<Command> = AutoReply.commands) {
+        commands.forEach {
+            it.register()
+        }
     }
 
-    private fun registerCommands(vararg commands: net.mamoe.mirai.console.command.Command) {
+    private fun unregisterCommands(commands: List<Command> = AutoReply.commands) {
         commands.forEach {
-            CommandManager.registerCommand(it, true)
+            it.unregister()
         }
     }
 }
