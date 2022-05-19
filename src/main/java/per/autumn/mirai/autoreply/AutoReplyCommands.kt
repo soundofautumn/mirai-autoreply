@@ -1,18 +1,25 @@
 package per.autumn.mirai.autoreply
 
+import cn.hutool.core.io.FileUtil
+import cn.hutool.core.util.IdUtil
+import cn.hutool.http.HttpUtil
 import net.mamoe.mirai.console.command.CommandSender
 import net.mamoe.mirai.console.command.SimpleCommand
+import net.mamoe.mirai.message.data.Image
+import net.mamoe.mirai.message.data.Image.Key.queryUrl
 import net.mamoe.mirai.message.data.MessageChainBuilder
 import per.autumn.mirai.autoreply.Config.enabledGroups
 import per.autumn.mirai.autoreply.Config.replyMap
 import per.autumn.mirai.autoreply.ReplyManager.removeByKeyword
+import java.io.File
 
 /**
  * @author SoundOfAutumn
  * @date 2022/4/27 10:58
  */
-class Command {
-    object Add : SimpleCommand(AutoReply, "添加自动回复") {
+@Suppress("UNUSED")
+class AutoReplyCommands {
+    object AddAutoReply : SimpleCommand(AutoReply, "添加自动回复") {
         @Handler
         suspend fun handle(sender: CommandSender, keyword: String, response: String) {
             replyMap[keyword] = response
@@ -20,7 +27,7 @@ class Command {
         }
     }
 
-    object Remove : SimpleCommand(AutoReply, "移除自动回复") {
+    object RemoveAutoReply : SimpleCommand(AutoReply, "移除自动回复") {
         @Handler
         suspend fun handle(sender: CommandSender, key: String) {
             removeByKeyword(key)
@@ -53,6 +60,34 @@ class Command {
         }
     }
 
+    object AddImage : SimpleCommand(AutoReply, "添加图片") {
+        @Handler
+        suspend fun handle(sender: CommandSender, name: String, image: Image) {
+            val uuid = IdUtil.randomUUID()
+            HttpUtil.downloadFile(image.queryUrl(), FileUtil.file(AutoReply.imgFolder, "$uuid.jpg"))
+            Config.imageMap[name] = uuid
+        }
+    }
+
+    object RemoveImage : SimpleCommand(AutoReply, "移除图片") {
+        @Handler
+        suspend fun handle(sender: CommandSender, name: String) {
+            val imageName = Config.imageMap.remove(name)
+            if (imageName == null) {
+                sender.sendMessage("该图片不存在")
+            }
+            FileUtil.del(File(AutoReply.imgFolder, "$imageName.jpg"))
+        }
+    }
+
+    object ClearImage : SimpleCommand(AutoReply, "清空图片") {
+        @Handler
+        fun handle(sender: CommandSender) {
+            Config.imageMap.clear()
+            FileUtil.clean(AutoReply.imgFolder)
+        }
+    }
+
     object QueryEnabledGroups : SimpleCommand(AutoReply, "查询所有群") {
         @Handler
         suspend fun handle(sender: CommandSender) {
@@ -71,6 +106,7 @@ class Command {
             sender.sendMessage("开启成功")
         }
     }
+
     object DisablePrivateChat : SimpleCommand(AutoReply, "禁止私聊") {
         @Handler
         suspend fun handle(sender: CommandSender) {

@@ -15,6 +15,7 @@ object ReplyManager {
     }
 
     private fun hasKeyword(s: String): Boolean {
+        if (s.startsWith("/")) return false
         for (keyword in replyMap.keys) {
             if (Keyword(keyword).isMatchWith(s)) {
                 return true

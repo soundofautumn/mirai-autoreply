@@ -10,5 +10,6 @@ import net.mamoe.mirai.console.data.value
 object Config : AutoSavePluginConfig("config") {
     val replyMap: MutableMap<String, String> by value()
     val enabledGroups: MutableList<Long> by value()
-    var enablePrivateChat:Boolean by value(false)
+    val imageMap: MutableMap<String, String> by value()
+    var enablePrivateChat: Boolean by value(false)
 }
