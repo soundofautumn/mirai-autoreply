@@ -15,6 +15,10 @@ repositories {
 }
 dependencies {
     implementation("cn.hutool:hutool-all:5.8.0")
-    implementation ("net.objecthunter:exp4j:0.4.8")
+    implementation("net.objecthunter:exp4j:0.4.8")
+    testImplementation(kotlin("test"))
+}
+tasks.test {
+    useJUnitPlatform()
 }
 
