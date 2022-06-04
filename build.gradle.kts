@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "per.autumn.mirai.autoreply"
-version = "1.3.1"
+version = "1.3.2"
 
 repositories {
     maven("https://maven.aliyun.com/repository/public")
