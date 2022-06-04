@@ -3,8 +3,8 @@ package per.autumn.mirai.autoreply
 import net.mamoe.mirai.console.command.Command
 import net.mamoe.mirai.console.command.CommandManager.INSTANCE.register
 import net.mamoe.mirai.console.command.CommandManager.INSTANCE.unregister
-import net.mamoe.mirai.console.plugin.jvm.JavaPlugin
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescriptionBuilder
+import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
 import net.mamoe.mirai.event.GlobalEventChannel
 import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.event.events.UserMessageEvent
@@ -13,7 +13,7 @@ import per.autumn.mirai.autoreply.ReplyManager.getResponse
 import per.autumn.mirai.autoreply.ReplyManager.hasKeyword
 import java.io.File
 
-object AutoReply : JavaPlugin(
+object AutoReply : KotlinPlugin(
     JvmPluginDescriptionBuilder("per.autumn.mirai.autoreply.plugin", "1.3.1")
         .info("一个简易的自动回复插件")
         .name("auto-reply").build()

@@ -21,7 +21,14 @@ import java.io.File
 class AutoReplyCommands {
     object AddAutoReply : SimpleCommand(AutoReply, "添加自动回复") {
         @Handler
-        suspend fun handle(sender: CommandSender, keyword: String, response: String) {
+        suspend fun handle(sender: CommandSender, vararg args: String) {
+            val keyword = args[0]
+            var response = args[1]
+            if (args.size > 2) {
+                for (s in (2 until args.size)) {
+                    response += args[s]
+                }
+            }
             replyMap[keyword] = response
             sender.sendMessage("添加成功")
         }
