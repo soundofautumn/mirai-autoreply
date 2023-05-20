@@ -1,9 +1,9 @@
 plugins {
-    val kotlinVersion = "1.5.30"
+    val kotlinVersion = "1.7.20"
     kotlin("jvm") version kotlinVersion
     kotlin("plugin.serialization") version kotlinVersion
 
-    id("net.mamoe.mirai-console") version "2.11.1"
+    id("net.mamoe.mirai-console") version "2.14.0"
 }
 
 group = "per.autumn.mirai.autoreply"
@@ -14,7 +14,7 @@ repositories {
     mavenCentral()
 }
 dependencies {
-    implementation("cn.hutool:hutool-all:5.8.0")
+    implementation("cn.hutool:hutool-all:5.8.11")
     implementation("net.objecthunter:exp4j:0.4.8")
     testImplementation(kotlin("test"))
 }
