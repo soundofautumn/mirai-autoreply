@@ -1,7 +1,6 @@
 package per.autumn.mirai.autoreply
 
 import kotlinx.serialization.Serializable
-import net.mamoe.mirai.message.data.Message
 
 /**
  * @author SoundOfAutumn
@@ -17,12 +16,12 @@ class Keyword {
         this.raw = raw
     }
 
-    fun isMatchWith(message: Message): Boolean {
-        return isMatchWith(message.contentToString())
-    }
-
     fun isMatchWith(text: String): Boolean {
         return regex.matches(text)
+    }
+
+    fun getAllMatched(text: String): List<String> {
+        return regex.findAll(text).map { it.value }.toList()
     }
 
     private fun getKeywordRegex(): Regex {
@@ -33,7 +32,7 @@ class Keyword {
         val result = StringBuilder()
         for (part in split) {
             if (Parser.isValidExpression(part)) {
-                result.append(".+")
+                result.append("(.+)")
             } else {
                 result.append(part)
             }

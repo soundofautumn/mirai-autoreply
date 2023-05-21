@@ -27,8 +27,10 @@ object AutoReply : KotlinPlugin(
             .filter { enabledGroups.contains(it.group.id) }
             .subscribeAlways<GroupMessageEvent> {
                 replyMap.forEach { (keyword, response) ->
-                    if (keyword.isMatchWith(it.message)) {
-                        it.group.sendMessage(response.buildMessage(it))
+                    Reply(keyword, response, it.message.contentToString()).let {
+                        if (it.isKeywordMatch()) {
+                            this.subject.sendMessage(it.getResponseMsg(this))
+                        }
                     }
                 }
             }
@@ -37,8 +39,10 @@ object AutoReply : KotlinPlugin(
             .subscribeAlways<UserMessageEvent> {
                 if (Config.enablePrivateChat ) {
                     replyMap.forEach { (keyword, response) ->
-                        if (keyword.isMatchWith(it.message)) {
-                            it.subject.sendMessage(response.buildMessage(it))
+                        Reply(keyword, response, it.message.contentToString()).let {
+                            if (it.isKeywordMatch()) {
+                                this.subject.sendMessage(it.getResponseMsg(this))
+                            }
                         }
                     }
                 }

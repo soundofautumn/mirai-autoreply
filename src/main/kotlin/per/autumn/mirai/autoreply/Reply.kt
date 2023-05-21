@@ -9,11 +9,13 @@ import net.mamoe.mirai.message.data.Message
  */
 class Reply(private val keyword: Keyword, private val response: Response, private val text: String) {
 
-    fun isMatch(): Boolean {
+    fun isKeywordMatch(): Boolean {
         return keyword.isMatchWith(text)
     }
 
-    fun getResponseMsg(event: MessageEvent): Message {
-        return response.buildMessage(event)
+    suspend fun getResponseMsg(event: MessageEvent): Message {
+        return response.buildMessage(event, keyword.getAllMatched(text))
     }
+
+
 }
