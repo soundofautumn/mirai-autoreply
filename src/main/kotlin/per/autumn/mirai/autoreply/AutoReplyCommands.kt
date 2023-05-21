@@ -21,7 +21,7 @@ class AutoReplyCommands {
     object AddAutoReply : SimpleCommand(AutoReply, "添加自动回复") {
         @Handler
         suspend fun handle(sender: CommandSender, rawKeyword: String, rawResponse: String) {
-            replyMap[Keyword(rawKeyword)] = Response(rawResponse)
+            ReplyManger.addReply(rawKeyword, rawResponse)
             sender.sendMessage("添加成功")
         }
     }
@@ -29,12 +29,7 @@ class AutoReplyCommands {
     object RemoveAutoReply : SimpleCommand(AutoReply, "移除自动回复") {
         @Handler
         suspend fun handle(sender: CommandSender, rawKeyword: String) {
-            val it = replyMap.iterator()
-            while (it.hasNext()) {
-                if (it.next().key.raw == rawKeyword) {
-                    it.remove()
-                }
-            }
+            ReplyManger.removeReply(rawKeyword)
             sender.sendMessage("移除成功")
         }
     }
