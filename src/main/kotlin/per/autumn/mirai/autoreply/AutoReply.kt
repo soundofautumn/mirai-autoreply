@@ -9,8 +9,7 @@ import net.mamoe.mirai.event.GlobalEventChannel
 import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.event.events.UserMessageEvent
 import per.autumn.mirai.autoreply.Config.enabledGroups
-import per.autumn.mirai.autoreply.ReplyManager.getResponse
-import per.autumn.mirai.autoreply.ReplyManager.hasKeyword
+import per.autumn.mirai.autoreply.Config.replyMap
 import java.io.File
 
 object AutoReply : KotlinPlugin(
@@ -27,15 +26,21 @@ object AutoReply : KotlinPlugin(
             .filterIsInstance<GroupMessageEvent>()
             .filter { enabledGroups.contains(it.group.id) }
             .subscribeAlways<GroupMessageEvent> {
-                if (hasKeyword(it.message)) {
-                    it.group.sendMessage(getResponse(it))
+                replyMap.forEach { (keyword, response) ->
+                    if (keyword.isMatchWith(it.message)) {
+                        it.group.sendMessage(response.buildMessage(it))
+                    }
                 }
             }
         //添加私聊监听
         GlobalEventChannel
             .subscribeAlways<UserMessageEvent> {
-                if (Config.enablePrivateChat && hasKeyword(it.message)) {
-                    it.subject.sendMessage(getResponse(it))
+                if (Config.enablePrivateChat ) {
+                    replyMap.forEach { (keyword, response) ->
+                        if (keyword.isMatchWith(it.message)) {
+                            it.subject.sendMessage(response.buildMessage(it))
+                        }
+                    }
                 }
             }
     }

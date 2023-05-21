@@ -1,61 +1,54 @@
 package per.autumn.mirai.autoreply
 
-import net.mamoe.mirai.message.data.MessageChain
+import kotlinx.serialization.Serializable
+import net.mamoe.mirai.event.events.MessageEvent
+import net.mamoe.mirai.message.data.*
 
 /**
  * @author SoundOfAutumn
  * @date 2022/5/7 19:52
  */
-data class Response(val pattern: String) {
-    companion object {
-        const val EmptyString = ""
-        const val Quote = "@q"
-        const val AtAll = "@a"
-        const val AtSender = "@s"
-        const val Now = "\${now}"
-        const val Today = "\${today}"
-        const val DayOfWeek = "\${day}"
-        const val Calc = "\${calc}"
+@Serializable
+class Response {
+
+    private enum class Type(val pattern: String, val buildWith: (MessageChainBuilder, String, MessageEvent) -> Unit) {
+        NORMAL("", { mcb, raw, _ -> mcb.add(raw) }),
+        AT_SENDER("@s", { mcb, _, event -> mcb.add(At(event.sender)) }),
+        AT_ALL("@a", { mcb, _, _ -> mcb.add(AtAll) }),
+        QUOTE_SENDER("@q", { mcb, _, event -> mcb.add(QuoteReply(event.message)) }),
+        CURRENT_TIME("now", { mcb, _, _ -> mcb.add(nowTime()) }),
+        CURRENT_DATE("today", { mcb, _, _ -> mcb.add(today()) }),
+        CURRENT_DAY_OF_WEEK("day", { mcb, _, _ -> mcb.add(currentDayOfWeek()) }),
+//        CALCULATE_EXPRESSION("calc", { mcb, raw, _ -> mcb.add(calculateExpression(raw)) }),
     }
 
-    val atSender = pattern.contains(AtSender)
-    val quote = pattern.contains(Quote)
-    val atAll = pattern.contains(AtAll)
+    private val parsed: List<Pair<Type, String>>
 
-
-    fun parse(keyword: String, msg: MessageChain): String {
-        return parse(Keyword(keyword), msg.contentToString())
+    constructor(raw: String) {
+        val split = Parser.split(raw)
+        val result: MutableList<Pair<Type, String>> = arrayListOf()
+        split.forEach { part ->
+            if (Parser.isValidExpression(part)) {
+                Parser.getContent(part).let { content ->
+                    Type.values().find { type -> type.pattern == content }?.let { type ->
+                        result.add(Pair(type, content))
+                    } ?: let {
+                        AutoReply.logger.warning("Invalid expression: $part, handling as normal string.")
+                        result.add(Pair(Type.NORMAL, part))
+                    }
+                }
+            } else {
+                result.add(Pair(Type.NORMAL, part))
+            }
+        }
+        parsed = result
     }
 
-    private fun parse(keyword: Keyword, text: String): String {
-        return if (!pattern.contains("$")) {
-            removeExtra(pattern)
-        } else {
-            var res = pattern
-            if (res.contains(Now)) {
-                res = res.replace(Now, nowTime())
-            }
-            if (res.contains(Today)) {
-                res = res.replace(Today, today())
-            }
-            if (res.contains(DayOfWeek)) {
-                res = res.replace(DayOfWeek, currentDayOfWeek())
-            }
-            if (res.contains(Calc)) {
-                res = res.replace(Calc, calculateExpression(keyword.parse(text, Calc)))
-            }
-            removeExtra(res)
+    fun buildMessage(event: MessageEvent): Message {
+        val mcb = MessageChainBuilder()
+        for (pair in parsed) {
+            pair.first.buildWith(mcb, pair.second, event)
         }
-    }
-
-    private fun removeExtra(text: String): String {
-        var res = text
-        if (quote) {
-            res = res.replace(Quote, EmptyString)
-        }
-        if (atAll) {
-            res = res.replace(AtAll, EmptyString)
-        }
-        return res
+        return mcb.build()
     }
 }

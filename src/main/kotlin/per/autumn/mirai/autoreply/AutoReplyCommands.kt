@@ -10,7 +10,6 @@ import net.mamoe.mirai.message.data.Image.Key.queryUrl
 import net.mamoe.mirai.message.data.MessageChainBuilder
 import per.autumn.mirai.autoreply.Config.enabledGroups
 import per.autumn.mirai.autoreply.Config.replyMap
-import per.autumn.mirai.autoreply.ReplyManager.removeByKeyword
 import java.io.File
 
 /**
@@ -21,23 +20,21 @@ import java.io.File
 class AutoReplyCommands {
     object AddAutoReply : SimpleCommand(AutoReply, "添加自动回复") {
         @Handler
-        suspend fun handle(sender: CommandSender, vararg args: String) {
-            val keyword = args[0]
-            var response = args[1]
-            if (args.size > 2) {
-                for (s in (2 until args.size)) {
-                    response += args[s]
-                }
-            }
-            replyMap[keyword] = response
+        suspend fun handle(sender: CommandSender, rawKeyword: String, rawResponse: String) {
+            replyMap[Keyword(rawKeyword)] = Response(rawResponse)
             sender.sendMessage("添加成功")
         }
     }
 
     object RemoveAutoReply : SimpleCommand(AutoReply, "移除自动回复") {
         @Handler
-        suspend fun handle(sender: CommandSender, key: String) {
-            removeByKeyword(key)
+        suspend fun handle(sender: CommandSender, rawKeyword: String) {
+            val it = replyMap.iterator()
+            while (it.hasNext()) {
+                if (it.next().key.raw == rawKeyword) {
+                    it.remove()
+                }
+            }
             sender.sendMessage("移除成功")
         }
     }

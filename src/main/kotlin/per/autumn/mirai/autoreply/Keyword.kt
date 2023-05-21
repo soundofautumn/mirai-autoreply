@@ -1,21 +1,44 @@
 package per.autumn.mirai.autoreply
 
+import kotlinx.serialization.Serializable
+import net.mamoe.mirai.message.data.Message
+
 /**
  * @author SoundOfAutumn
  * @date 2022/5/7 19:48
  */
-data class Keyword(private val pattern: String) {
+@Serializable
+class Keyword {
 
-    private val needParse = pattern.contains("$")
-    private val parserRegex = if (needParse) pattern.replace(Regex("""\$\{.*}"""), """\$\{.*}""") else pattern
+    val raw: String
+    private val regex: Regex by lazy { getKeywordRegex() }
+
+    constructor(raw: String) {
+        this.raw = raw
+    }
+
+    fun isMatchWith(message: Message): Boolean {
+        return isMatchWith(message.contentToString())
+    }
 
     fun isMatchWith(text: String): Boolean {
-        return text.contains(Regex(parserRegex))
+        return regex.matches(text)
     }
 
-    fun parse(text: String, patternType: String): String {
-        var res = text
-        pattern.split(patternType).forEach { res = res.replace(it, "") }
-        return res
+    private fun getKeywordRegex(): Regex {
+        val split = Parser.split(this.raw)
+        if (split.size == 1) {
+            return Regex(split[0])
+        }
+        val result = StringBuilder()
+        for (part in split) {
+            if (Parser.isValidExpression(part)) {
+                result.append(".+")
+            } else {
+                result.append(part)
+            }
+        }
+        return Regex(result.toString())
     }
+
 }

@@ -29,6 +29,10 @@ fun calculateExpression(expression: String): String {
     return ExpressionBuilder(expression).build().evaluate().toString()
 }
 
+fun isValidCalculateExpression(expression: String) :Boolean{
+    return ExpressionBuilder(expression).build().validate().isValid
+}
+
 /**
  * 必须在MiraiConsole启动后才能被调用
  */

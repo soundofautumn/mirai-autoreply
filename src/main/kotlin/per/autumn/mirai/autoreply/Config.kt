@@ -8,7 +8,7 @@ import net.mamoe.mirai.console.data.value
  * @date 2022/4/27 11:00
  */
 object Config : AutoSavePluginConfig("config") {
-    val replyMap: MutableMap<String, String> by value()
+    val replyMap: MutableMap<Keyword, Response> by value()
     val enabledGroups: MutableList<Long> by value()
     val imageMap: MutableMap<String, String> by value()
     var enablePrivateChat: Boolean by value(false)
