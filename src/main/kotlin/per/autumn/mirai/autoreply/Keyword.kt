@@ -1,20 +1,12 @@
 package per.autumn.mirai.autoreply
 
-import kotlinx.serialization.Serializable
-
 /**
  * @author SoundOfAutumn
  * @date 2022/5/7 19:48
  */
-@Serializable
-class Keyword {
+class Keyword(val raw: String) {
 
-    val raw: String
     private val regex: Regex by lazy { getKeywordRegex() }
-
-    constructor(raw: String) {
-        this.raw = raw
-    }
 
     fun isMatchWith(text: String): Boolean {
         return regex.matches(text)
@@ -25,19 +17,22 @@ class Keyword {
     }
 
     private fun getKeywordRegex(): Regex {
-        val split = Parser.split(this.raw)
-        if (split.size == 1) {
-            return Regex(split[0])
-        }
-        val result = StringBuilder()
-        for (part in split) {
-            if (Parser.isValidExpression(part)) {
-                result.append("(.+)")
-            } else {
-                result.append(part)
+        Parser.split(this.raw).let {
+            if (it.size == 1) {
+                return Regex(it[0])
+            }
+            StringBuilder().apply {
+                it.forEach { part ->
+                    if (Parser.isValidExpression(part)) {
+                        append("(.+)")
+                    } else {
+                        append(part)
+                    }
+                }
+            }.toString().let { regex ->
+                return Regex(regex)
             }
         }
-        return Regex(result.toString())
     }
 
 }

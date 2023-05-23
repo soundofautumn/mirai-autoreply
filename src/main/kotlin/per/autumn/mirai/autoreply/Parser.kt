@@ -49,7 +49,7 @@ object Parser {
         }
         // 此时 text[i] = '{'
         i++
-        while (i != text.lastIndex + 1) {
+        while (i != text.length) {
             // 不能含有其他的 '$' 和 '{'
             if (text[i] == '$' || text[i] == '{') {
                 return -1

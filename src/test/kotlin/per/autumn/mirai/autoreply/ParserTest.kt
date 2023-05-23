@@ -93,5 +93,9 @@ internal class ParserTest {
     fun isValidExpressionTest() {
         assertTrue(Parser.isValidExpression("\${}"))
         assertTrue(Parser.isValidExpression("\${123}"))
+        assertFalse(Parser.isValidExpression("\${123"))
+        assertFalse(Parser.isValidExpression("\${"))
+        assertFalse(Parser.isValidExpression("\${}}"))
+        assertFalse(Parser.isValidExpression("\${{}"))
     }
 }

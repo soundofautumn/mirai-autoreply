@@ -91,9 +91,7 @@ class AutoReplyCommands {
         @Handler
         suspend fun handle(sender: CommandSender) {
             val chainBuilder = MessageChainBuilder()
-            for (id in enabledGroups) {
-                chainBuilder.add(id.toString())
-            }
+            enabledGroups.forEach { chainBuilder.add(it.toString()) }
             sender.sendMessage(chainBuilder.asMessageChain())
         }
     }
