@@ -7,6 +7,7 @@ import net.mamoe.mirai.message.data.*
 import net.mamoe.mirai.utils.ExternalResource.Companion.toExternalResource
 import java.io.File
 import net.objecthunter.exp4j.ExpressionBuilder
+import kotlinx.coroutines.runBlocking
 
 /**
  * @author SoundOfAutumn
@@ -17,7 +18,7 @@ class Response {
 
     private enum class Type(
         val isMatchWith: (String) -> Boolean,
-        val buildWith: suspend (MessageChainBuilder, String, MessageEvent, () -> String) -> Unit,
+        val buildWith: (MessageChainBuilder, String, MessageEvent, () -> String) -> Unit,
     ) {
         NORMAL({ true }, { mcb, raw, _, _ -> mcb.add(raw) }),
         AT_SENDER({ part -> part == "@s" }, { mcb, _, event, _ ->
@@ -38,9 +39,11 @@ class Response {
         CURRENT_DAY_OF_WEEK({ part -> part == "day" }, { mcb, _, _, _ -> mcb.add(currentDayOfWeek()) }),
         PICTURE({ part -> part.startsWith("pic") }, { mcb, raw, event, _ ->
             val name = raw.substring(4) // "pic".length + 1
-            Config.imageMap[name]?.let {
+            AutoReplyConfig.imageMap[name]?.let {
                 File(AutoReply.imgFolder, it).toExternalResource().use { image ->
-                    mcb.add(event.sender.uploadImage(image))
+                    runBlocking {
+                        mcb.add(event.sender.uploadImage(image))
+                    }
                 }
             } ?: let {
                 AutoReply.logger.warning("Image $name not found. Skipping.")
@@ -78,7 +81,7 @@ class Response {
         parsed = result
     }
 
-    suspend fun buildMessage(event: MessageEvent, keywordExpressions: List<String>): Message {
+    fun buildMessage(event: MessageEvent, keywordExpressions: List<String>): Message {
         val mcb = MessageChainBuilder()
         val iterator = keywordExpressions.iterator()
         parsed.forEach { pair ->
@@ -90,6 +93,9 @@ class Response {
                     return@buildWith ""
                 }
             }
+        }
+        if (iterator.hasNext()) {
+            AutoReply.logger.warning("Too many keyword expressions. Ignoring.")
         }
         return mcb.build()
     }

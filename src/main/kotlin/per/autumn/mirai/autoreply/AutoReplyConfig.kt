@@ -7,7 +7,7 @@ import net.mamoe.mirai.console.data.value
  * @author SoundOfAutumn
  * @date 2022/4/27 11:00
  */
-object Config : AutoSavePluginConfig("config") {
+object AutoReplyConfig : AutoSavePluginConfig("config") {
     val replyMap: MutableMap<String, String> by value()
     val enabledGroups: MutableList<Long> by value()
     val imageMap: MutableMap<String, String> by value()

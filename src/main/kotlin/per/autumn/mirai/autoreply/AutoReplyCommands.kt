@@ -8,8 +8,8 @@ import net.mamoe.mirai.console.command.SimpleCommand
 import net.mamoe.mirai.message.data.Image
 import net.mamoe.mirai.message.data.Image.Key.queryUrl
 import net.mamoe.mirai.message.data.MessageChainBuilder
-import per.autumn.mirai.autoreply.Config.enabledGroups
-import per.autumn.mirai.autoreply.Config.replyMap
+import per.autumn.mirai.autoreply.AutoReplyConfig.enabledGroups
+import per.autumn.mirai.autoreply.AutoReplyConfig.replyMap
 import java.io.File
 
 /**
@@ -64,14 +64,14 @@ class AutoReplyCommands {
         suspend fun handle(sender: CommandSender, name: String, image: Image) {
             val uuid = IdUtil.randomUUID()
             HttpUtil.downloadFile(image.queryUrl(), FileUtil.file(AutoReply.imgFolder, "$uuid.jpg"))
-            Config.imageMap[name] = uuid
+            AutoReplyConfig.imageMap[name] = uuid
         }
     }
 
     object RemoveImage : SimpleCommand(AutoReply, "移除图片") {
         @Handler
         suspend fun handle(sender: CommandSender, name: String) {
-            val imageName = Config.imageMap.remove(name)
+            val imageName = AutoReplyConfig.imageMap.remove(name)
             if (imageName == null) {
                 sender.sendMessage("该图片不存在")
             }
@@ -82,7 +82,7 @@ class AutoReplyCommands {
     object ClearImage : SimpleCommand(AutoReply, "清空图片") {
         @Handler
         fun handle(sender: CommandSender) {
-            Config.imageMap.clear()
+            AutoReplyConfig.imageMap.clear()
             FileUtil.clean(AutoReply.imgFolder)
         }
     }
@@ -101,7 +101,7 @@ class AutoReplyCommands {
     object EnablePrivateChat : SimpleCommand(AutoReply, "允许私聊") {
         @Handler
         suspend fun handle(sender: CommandSender) {
-            Config.enablePrivateChat = true
+            AutoReplyConfig.enablePrivateChat = true
             sender.sendMessage("开启成功")
         }
     }
@@ -109,7 +109,7 @@ class AutoReplyCommands {
     object DisablePrivateChat : SimpleCommand(AutoReply, "禁止私聊") {
         @Handler
         suspend fun handle(sender: CommandSender) {
-            Config.enablePrivateChat = false
+            AutoReplyConfig.enablePrivateChat = false
             sender.sendMessage("禁止成功")
         }
     }

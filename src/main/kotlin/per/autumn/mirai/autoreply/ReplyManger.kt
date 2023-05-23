@@ -7,7 +7,7 @@ import java.util.concurrent.ConcurrentHashMap
  * @date 2023/5/21 22:00
  */
 object ReplyManger {
-    private val replyMap = Config.replyMap
+    private val replyMap = AutoReplyConfig.replyMap
 
     @Transient
     private val cacheMap = ConcurrentHashMap<Keyword, Response>()

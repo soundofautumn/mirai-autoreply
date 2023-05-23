@@ -13,7 +13,7 @@ class Reply(private val keyword: Keyword, private val response: Response, privat
         return keyword.isMatchWith(text)
     }
 
-    suspend fun getResponseMsg(event: MessageEvent): Message {
+    fun getResponseMsg(event: MessageEvent): Message {
         return response.buildMessage(event, keyword.getAllMatched(text))
     }
 

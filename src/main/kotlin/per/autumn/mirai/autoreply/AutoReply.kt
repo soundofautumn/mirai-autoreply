@@ -1,7 +1,6 @@
 package per.autumn.mirai.autoreply
 
 import net.mamoe.mirai.console.command.Command
-import net.mamoe.mirai.console.command.CommandManager
 import net.mamoe.mirai.console.command.CommandManager.INSTANCE.register
 import net.mamoe.mirai.console.command.CommandManager.INSTANCE.unregister
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescriptionBuilder
@@ -9,7 +8,7 @@ import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
 import net.mamoe.mirai.event.GlobalEventChannel
 import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.event.events.UserMessageEvent
-import per.autumn.mirai.autoreply.Config.enabledGroups
+import per.autumn.mirai.autoreply.AutoReplyConfig.enabledGroups
 import java.io.File
 
 object AutoReply : KotlinPlugin(
@@ -19,11 +18,8 @@ object AutoReply : KotlinPlugin(
 ) {
     val imgFolder = File(dataFolder, "/img")
     override fun onEnable() {
-        Config.reload()
+        AutoReplyConfig.reload()
         registerCommands()
-        CommandManager.allRegisteredCommands.forEach {
-            logger.info("Registered command: $it")
-        }
         //添加群组监听
         GlobalEventChannel
             .filterIsInstance<GroupMessageEvent>()
@@ -36,7 +32,7 @@ object AutoReply : KotlinPlugin(
         //添加私聊监听
         GlobalEventChannel
             .subscribeAlways<UserMessageEvent> {
-                if (Config.enablePrivateChat) {
+                if (AutoReplyConfig.enablePrivateChat) {
                     ReplyManger.findReply(it.message.contentToString())?.let { reply ->
                         this.subject.sendMessage(reply.getResponseMsg(this))
                     }
@@ -46,7 +42,7 @@ object AutoReply : KotlinPlugin(
 
     override fun onDisable() {
         unregisterCommands()
-        Config.save()
+        AutoReplyConfig.save()
     }
 
     private val commands by lazy {
