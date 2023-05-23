@@ -7,14 +7,14 @@ plugins {
 }
 
 group = "per.autumn.mirai.autoreply"
-version = "2.0.1"
+version = "2.0.2"
 
 repositories {
     maven("https://maven.aliyun.com/repository/public")
     mavenCentral()
 }
 dependencies {
-    implementation("cn.hutool:hutool-all:5.8.11")
+    implementation("cn.hutool:hutool-all:5.8.15")
     implementation("net.objecthunter:exp4j:0.4.8")
     testImplementation(kotlin("test"))
 }

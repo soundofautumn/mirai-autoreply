@@ -12,7 +12,7 @@ import per.autumn.mirai.autoreply.AutoReplyConfig.enabledGroups
 import java.io.File
 
 object AutoReply : KotlinPlugin(
-    JvmPluginDescriptionBuilder("per.autumn.mirai.autoreply.plugin", "2.0.1")
+    JvmPluginDescriptionBuilder("per.autumn.mirai.autoreply.plugin", "2.0.2")
         .info("一个简易的自动回复插件")
         .name("auto-reply").build()
 ) {
